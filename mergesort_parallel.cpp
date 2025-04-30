@@ -74,23 +74,29 @@ void merge(int * arr, size_t  l, size_t  mid, size_t r, int* temp) {
 }
 
 void parallel_mergesort(int* arr, size_t l, size_t r, int* temp) {
-  if (l < r) {
-    size_t mid = (l + r) / 2;
+    if (l < r) {
+        size_t mid = (l + r) / 2;
 
-    if ((r - l) >= PARALLEL_THRESHOLD) {
-      // Parallel processing
-      std::thread t1(parallel_mergesort, arr, l, mid, temp);
-      std::thread t2(parallel_mergesort, arr, mid + 1, r, temp);
-      t1.join();
-      t2.join();
-    } else {
-      // Sequential fallback
-      parallel_mergesort(arr, l, mid, temp);
-      parallel_mergesort(arr, mid + 1, r, temp);
+        if ((r - l) >= PARALLEL_THRESHOLD) {
+            std::thread t1([&]() {
+                std::vector<int> temp1(mid - l + 1);
+                parallel_mergesort(arr, l, mid, temp1.data());
+            });
+
+            std::thread t2([&]() {
+                std::vector<int> temp2(r - mid);
+                parallel_mergesort(arr, mid + 1, r, temp2.data());
+            });
+
+            t1.join();
+            t2.join();
+        } else {
+            parallel_mergesort(arr, l, mid, temp);
+            parallel_mergesort(arr, mid + 1, r, temp);
+        }
+
+        merge(arr, l, mid + 1, r, temp);
     }
-
-    merge(arr, l, mid + 1, r, temp);
-  }
 }
 
 
