@@ -3,11 +3,11 @@ CXXFLAGS=-O3 -std=c++17 -fPIC -g
 LD=g++
 
 
-all: mergesort_seq
+all: mergesort_seq mergesort_parallel
 
 
-mergesort_seq: mergesort_seq.o
-	$(LD) $(LDFLAGS) mergesort_seq.o $(ARCHIVES) -o mergesort_seq
+mergesort_parallel: mergesort_parallel.o
+	$(LD) $(LDFLAGS) mergesort_parallel.o $(ARCHIVES) -o mergesort_parallel
 
 
 bench: mergesort_seq
