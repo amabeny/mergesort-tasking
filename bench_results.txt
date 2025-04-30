@@ -1,0 +1,22 @@
+Benchmark Results: Parallel vs Sequential Merge Sort
+
+Array Size: 1,000
+- Sequential: 0.0000494 s
+- Parallel:   0.0000525 s
+
+Array Size: 100,000
+- Sequential: 0.00763916 s
+- Parallel:   0.00795001 s
+
+Array Size: 1,000,000
+- Sequential: 0.0888562 s
+- Parallel:   0.0217991 s
+
+Array Size: 10,000,000
+- Sequential: 1.03276 s
+- Parallel:   0.181162 s
+
+Summary:
+- For small inputs (< 100,000), threading overhead negates performance gains.
+- For large inputs (> 1,000,000), parallel merge sort shows significant speedup.
+- Peak speedup observed at 10M elements: ~5.7x faster.
