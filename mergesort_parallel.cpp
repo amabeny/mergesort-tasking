@@ -8,6 +8,8 @@
 #include <algorithm>
 #include <chrono>
 #include <vector>
+#include <thread>  
+#define PARALLEL_THRESHOLD 100000
 
 #define DEBUG 0
 
@@ -71,12 +73,23 @@ void merge(int * arr, size_t  l, size_t  mid, size_t r, int* temp) {
 
 }
 
-void mergesort(int * arr, size_t l, size_t r, int* temp) {
+void parallel_mergesort(int* arr, size_t l, size_t r, int* temp) {
   if (l < r) {
-    size_t mid = (l+r)/2;
-    mergesort(arr, l, mid, temp);
-    mergesort(arr, mid+1, r, temp);
-    merge(arr, l, mid+1, r, temp);
+    size_t mid = (l + r) / 2;
+
+    if ((r - l) >= PARALLEL_THRESHOLD) {
+      // Parallel processing
+      std::thread t1(parallel_mergesort, arr, l, mid, temp);
+      std::thread t2(parallel_mergesort, arr, mid + 1, r, temp);
+      t1.join();
+      t2.join();
+    } else {
+      // Sequential fallback
+      parallel_mergesort(arr, l, mid, temp);
+      parallel_mergesort(arr, mid + 1, r, temp);
+    }
+
+    merge(arr, l, mid + 1, r, temp);
   }
 }
 
@@ -105,7 +118,7 @@ int main (int argc, char* argv[]) {
   
   std::vector<int> temp (n);
   // sort
-  mergesort(&(arr[0]), 0, n-1, &(temp[0]));
+ parallel_mergesort(&(arr[0]), 0, n-1, &(temp[0]));
 
   // end timing
   std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
